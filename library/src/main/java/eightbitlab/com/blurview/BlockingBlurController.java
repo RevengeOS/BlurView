@@ -35,7 +35,6 @@ final class BlockingBlurController implements BlurController {
     static final int TRANSPARENT = 0;
 
     private final float scaleFactor = DEFAULT_SCALE_FACTOR;
-    private float blurRadius = DEFAULT_BLUR_RADIUS;
     private float roundingWidthScaleFactor = 1f;
     private float roundingHeightScaleFactor = 1f;
 
@@ -45,6 +44,7 @@ final class BlockingBlurController implements BlurController {
 
     @SuppressWarnings("WeakerAccess")
     final View blurView;
+    private float blurRadius;
     private int overlayColor;
     private final ViewGroup rootView;
     private final int[] rootLocation = new int[2];
@@ -77,9 +77,11 @@ final class BlockingBlurController implements BlurController {
      *                 Can be Activity's root content layout (android.R.id.content)
      *                 or some of your custom root layouts.
      */
-    BlockingBlurController(@NonNull View blurView, @NonNull ViewGroup rootView, @ColorInt int overlayColor) {
+    BlockingBlurController(@NonNull View blurView, @NonNull ViewGroup rootView, @ColorInt int overlayColor,
+                           float blurRadius) {
         this.rootView = rootView;
         this.blurView = blurView;
+        this.blurRadius = blurRadius;
         this.overlayColor = overlayColor;
         this.blurAlgorithm = new NoOpBlurAlgorithm();
 
