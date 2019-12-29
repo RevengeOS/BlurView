@@ -2,7 +2,7 @@ package eightbitlab.com.blurview;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 interface BlurController {
     float DEFAULT_SCALE_FACTOR = 8f;
