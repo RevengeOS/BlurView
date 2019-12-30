@@ -7,6 +7,7 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Locale;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.exp;
@@ -165,10 +166,10 @@ final class BlurShader {
         if (sourceIsFbo) {
             //FBO comes flipped vertically, so we need to flip it back, scaling Y by (-1)
             position = "gl_Position = vec4(position.x, position.y * -1.0, 0.0, 1.0);\n";
-            singleStepOffset = format("vec2(0.0, %f);\n", 1.0 / height);
+            singleStepOffset = format(Locale.US, "vec2(0.0, %f);\n", 1.0 / height);
         } else {
             position = "gl_Position = position;\n";
-            singleStepOffset = format("vec2(%f, 0.0);\n", 1.0 / width);
+            singleStepOffset = format(Locale.US, "vec2(%f, 0.0);\n", 1.0 / width);
         }
 
         StringBuilder shaderString = new StringBuilder("attribute vec4 position;\n" +
@@ -180,8 +181,8 @@ final class BlurShader {
                 "       blurCoordinates[0] = inputTextureCoordinates;\n");
 
         for (int currentOptimizedOffset = 0; currentOptimizedOffset < numberOfOptimizedOffsets; currentOptimizedOffset++) {
-            shaderString.append(format("blurCoordinates[%d] = inputTextureCoordinates + singleStepOffset * %f;\n", currentOptimizedOffset * 2 + 1, optimizedGaussianOffsets[currentOptimizedOffset]));
-            shaderString.append(format("blurCoordinates[%d] = inputTextureCoordinates - singleStepOffset * %f;\n", currentOptimizedOffset * 2 + 2, optimizedGaussianOffsets[currentOptimizedOffset]));
+            shaderString.append(format(Locale.US, "blurCoordinates[%d] = inputTextureCoordinates + singleStepOffset * %f;\n", currentOptimizedOffset * 2 + 1, optimizedGaussianOffsets[currentOptimizedOffset]));
+            shaderString.append(format(Locale.US, "blurCoordinates[%d] = inputTextureCoordinates - singleStepOffset * %f;\n", currentOptimizedOffset * 2 + 2, optimizedGaussianOffsets[currentOptimizedOffset]));
         }
 
         shaderString.append("}");
@@ -217,11 +218,11 @@ final class BlurShader {
 
         if (sourceIsFbo) {
             source = "uniform sampler2D inputImageTexture;\n";
-            singleStepOffset = format("vec2(0.0, %f);\n", 1.0 / height);
+            singleStepOffset = format(Locale.US, "vec2(0.0, %f);\n", 1.0 / height);
         } else {
             source = "#extension GL_OES_EGL_image_external : require\n" +
                     "uniform samplerExternalOES inputImageTexture;\n";
-            singleStepOffset = format("vec2(%f, 0.0);\n", 1.0 / width);
+            singleStepOffset = format(Locale.US, "vec2(%f, 0.0);\n", 1.0 / width);
         }
 
         StringBuilder shaderString = new StringBuilder(source +
@@ -230,15 +231,15 @@ final class BlurShader {
                 "   void main() {\n" +
                 "       lowp vec3 sum = vec3(0.0);\n");
 
-        shaderString.append(format("sum += texture2D(inputImageTexture, blurCoordinates[0]).rgb * %f;\n", standardGaussianWeights[0]));
+        shaderString.append(format(Locale.US, "sum += texture2D(inputImageTexture, blurCoordinates[0]).rgb * %f;\n", standardGaussianWeights[0]));
 
         for (int currentBlurCoordinateIndex = 0; currentBlurCoordinateIndex < numberOfOptimizedOffsets; currentBlurCoordinateIndex++) {
             float firstWeight = standardGaussianWeights[currentBlurCoordinateIndex * 2 + 1];
             float secondWeight = standardGaussianWeights[currentBlurCoordinateIndex * 2 + 2];
             float optimizedWeight = firstWeight + secondWeight;
 
-            shaderString.append(format("sum += texture2D(inputImageTexture, blurCoordinates[%d]).rgb * %f;\n", ((currentBlurCoordinateIndex * 2) + 1), optimizedWeight));
-            shaderString.append(format("sum += texture2D(inputImageTexture, blurCoordinates[%d]).rgb * %f;\n", ((currentBlurCoordinateIndex * 2) + 2), optimizedWeight));
+            shaderString.append(format(Locale.US, "sum += texture2D(inputImageTexture, blurCoordinates[%d]).rgb * %f;\n", ((currentBlurCoordinateIndex * 2) + 1), optimizedWeight));
+            shaderString.append(format(Locale.US, "sum += texture2D(inputImageTexture, blurCoordinates[%d]).rgb * %f;\n", ((currentBlurCoordinateIndex * 2) + 2), optimizedWeight));
         }
 
         // If the number of required samples exceeds the amount we can pass in via varyings, we have to do dependent texture reads in the fragment shader
@@ -250,8 +251,8 @@ final class BlurShader {
                 float optimizedWeight = firstWeight + secondWeight;
                 float optimizedOffset = (firstWeight * (currentOverflowTextureRead * 2 + 1) + secondWeight * (currentOverflowTextureRead * 2 + 2)) / optimizedWeight;
 
-                shaderString.append(format("sum += texture2D(inputImageTexture, blurCoordinates[0] + singleStepOffset * %f).rgb * %f;\n", optimizedOffset, optimizedWeight));
-                shaderString.append(format("sum += texture2D(inputImageTexture, blurCoordinates[0] - singleStepOffset * %f).rgb * %f;\n", optimizedOffset, optimizedWeight));
+                shaderString.append(format(Locale.US, "sum += texture2D(inputImageTexture, blurCoordinates[0] + singleStepOffset * %f).rgb * %f;\n", optimizedOffset, optimizedWeight));
+                shaderString.append(format(Locale.US, "sum += texture2D(inputImageTexture, blurCoordinates[0] - singleStepOffset * %f).rgb * %f;\n", optimizedOffset, optimizedWeight));
             }
         }
 
