@@ -29,6 +29,7 @@ public class BlurViewRenderer implements Renderer {
     private ViewGroup rootView;
 
     Surface backgroundSurface;
+    private int blurRadius;
     private SurfaceTexture backgroundTexture;
     private BlurShader blurShader;
     private Drawable windowBackground;
@@ -52,10 +53,11 @@ public class BlurViewRenderer implements Renderer {
     };
 
     @TargetApi(Build.VERSION_CODES.N)
-    BlurViewRenderer(ViewGroup rootView, View blurView, SizeProvider sizeProvider) {
+    BlurViewRenderer(ViewGroup rootView, View blurView, SizeProvider sizeProvider, int blurRadius) {
         this.blurView = blurView;
         this.sizeProvider = sizeProvider;
         this.rootView = rootView;
+        this.blurRadius = blurRadius;
     }
 
     void drawViewHierarchy() {
@@ -121,7 +123,7 @@ public class BlurViewRenderer implements Renderer {
         backgroundTexture.setDefaultBufferSize(downscaledWidth, downscaledHeight);
         backgroundSurface = new Surface(backgroundTexture);
 
-        blurShader = new BlurShader(downscaledWidth, downscaledHeight, textureId, sizeProvider);
+        blurShader = new BlurShader(downscaledWidth, downscaledHeight, textureId, sizeProvider, blurRadius);
     }
 
     //Called from background thread

@@ -31,8 +31,6 @@ final class BlurShader {
     private static final FloatBuffer VERTEX_BUFFER;
     private static final FloatBuffer TEXTURE_COORD_BUFFER;
 
-    private static final int DEFAULT_BLUR_RADIUS = 8;
-
     private final int width;
     private final int height;
     private final int textureId;
@@ -68,13 +66,13 @@ final class BlurShader {
     private int secondPassProgram;
     private int blurRadius;
 
-    BlurShader(int width, int height, int textureId, SizeProvider sizeProvider) {
+    BlurShader(int width, int height, int textureId, SizeProvider sizeProvider, int blurRadius) {
         this.width = width;
         this.height = height;
         this.textureId = textureId;
         renderBuffer = new RenderBuffer(width, height, GLES20.GL_TEXTURE0, sizeProvider);
 
-        setBlurRadius(DEFAULT_BLUR_RADIUS);
+        setBlurRadius(blurRadius);
     }
 
     void draw() {
