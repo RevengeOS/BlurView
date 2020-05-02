@@ -21,7 +21,7 @@ LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res
 
 LOCAL_SRC_FILES := \
     $(call all-java-files-under, java) \
-    $(call all-renderscript-files-under, rs)
+    $(call all-renderscript-files-under, res)
 
 LOCAL_STATIC_ANDROID_LIBRARIES := \
     androidx.annotation_annotation
