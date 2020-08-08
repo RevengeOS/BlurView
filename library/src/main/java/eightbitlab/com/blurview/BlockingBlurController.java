@@ -41,7 +41,8 @@ final class BlockingBlurController implements BlurController {
     private final ViewGroup rootView;
     private final int[] rootLocation = new int[2];
     private final int[] blurViewLocation = new int[2];
-    private final SizeScaler sizeScaler = new SizeScaler();
+    private final SizeScaler sizeScaler = new SizeScaler(DEFAULT_SCALE_FACTOR);
+    private float scaleFactor = 1f;
 
     private final ViewTreeObserver.OnPreDrawListener drawListener = new ViewTreeObserver.OnPreDrawListener() {
         @Override
@@ -157,7 +158,8 @@ final class BlockingBlurController implements BlurController {
     }
 
     private void allocateBitmap(int measuredWidth, int measuredHeight) {
-        SizeScaler.Size bitmapSize = sizeScaler.roundSize(measuredWidth, measuredHeight);
+        SizeScaler.Size bitmapSize = sizeScaler.scale(measuredWidth, measuredHeight);
+        scaleFactor = bitmapSize.scaleFactor;
         internalBitmap = Bitmap.createBitmap(bitmapSize.width, bitmapSize.height, blurAlgorithm.getSupportedBitmapConfig());
     }
 
@@ -170,8 +172,6 @@ final class BlockingBlurController implements BlurController {
 
         int left = blurViewLocation[0] - rootLocation[0];
         int top = blurViewLocation[1] - rootLocation[1];
-
-        float scaleFactor = sizeScaler.scaleFactor();
 
         float scaledLeftPosition = -left / scaleFactor;
         float scaledTopPosition = -top / scaleFactor;
@@ -193,7 +193,7 @@ final class BlockingBlurController implements BlurController {
         updateBlur();
 
         canvas.save();
-        canvas.scale(sizeScaler.scaleFactor(), sizeScaler.scaleFactor());
+        canvas.scale(scaleFactor, scaleFactor);
         canvas.drawBitmap(internalBitmap, 0, 0, paint);
         canvas.restore();
 
